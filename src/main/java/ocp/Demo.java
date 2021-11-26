@@ -11,7 +11,7 @@ public class Demo {
                 new Product("house", Color.RED, Size.XL)
         );
 
-        new ProductFilter().filterByColor(products, Color.GREEN)
+        new ProductViolatedFilter().filterByColor(products, Color.GREEN)
                 .forEach(System.out::println);
 
         new ProductOCPFilter().filter(products, new ColorSpecification(Color.GREEN))

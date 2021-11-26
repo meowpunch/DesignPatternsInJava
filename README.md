@@ -6,9 +6,12 @@
 ## SOLID
 
 ### Single Responsibility Principle 
-There should never be more than one reason for a class to change. In other words, every class should have only one responsibility.
+`There should never be more than one reason for a class to change.` i.e. every class should have only one responsibility.
 
 ### Open Closed Principle (OCP)
-open for extension, but closed for modification 
+`open for extension, but closed for modification.`
 - OCP + [Specification Pattern](https://en.wikipedia.org/wiki/Specification_pattern)
   
+### Liskov Substitution Principle
+`if S is a subtype of T, then objects of type T in a program may be replaced with objects of type S without altering any of the desirable properties of that program.` i.e. if S is a subtype of T, then objects of type T in a program may be replaced with objects of type S without altering any of the desirable properties of that program.
+- s

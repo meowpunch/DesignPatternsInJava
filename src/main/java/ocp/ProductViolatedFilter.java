@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 
-class ProductFilter {
+class ProductViolatedFilter {
     /*
         imagine the situation where you have to add other criteria such as price
      */
