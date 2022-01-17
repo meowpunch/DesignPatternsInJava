@@ -1,6 +1,8 @@
 package creational.builder;
 
 
+import creational.builder.exercise.CodeBuilder;
+
 public class Demo {
 
     public static void main(String[] args) {
@@ -35,7 +37,6 @@ public class Demo {
         builder.addChildFluent("li", "hello")
                 .addChildFluent("li", "world");
         System.out.println(builder);
-
 
 
         // Class Builder

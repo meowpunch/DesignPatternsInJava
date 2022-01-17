@@ -1,4 +1,4 @@
-package creational.builder;
+package creational.builder.exercise;
 
 import java.util.ArrayList;
 import java.util.List;
