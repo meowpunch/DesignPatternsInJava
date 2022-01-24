@@ -11,11 +11,3 @@ public class PersonFactory {
         return new Person(numOfPerson++, name);
     }
 }
-
-class ExerciseDemo {
-    public static void main(String[] args) {
-        final PersonFactory pf = new PersonFactory();
-
-        Stream.of("Tommy", "Sunguck", "Meow").forEach(n -> System.out.println(pf.createPerson(n)));
-    }
-}
