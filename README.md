@@ -31,6 +31,6 @@
 
 ## Structural Patterns
 
-## Behavioral Patterns
+## behavioral Patterns
 
 ## Concurrency Patterns
