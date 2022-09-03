@@ -29,7 +29,7 @@ public class Ob {
     Observer ob1 = (o, arg) -> System.out.println(Thread.currentThread().getName() + " ob1 consume " + arg); // override `void update` method
     Observer ob2 = (o, arg) -> System.out.println(Thread.currentThread().getName() + " ob2 consume " + arg);
 
-    runnableObservable.addObserver(ob1);
+    runnableObservable.addObserver(ob1); // subscribe
     runnableObservable.addObserver(ob2);
 
     ExecutorService executorService = Executors.newSingleThreadExecutor();
