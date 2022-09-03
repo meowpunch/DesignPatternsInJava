@@ -70,8 +70,8 @@ public class Ob {
   @AllArgsConstructor
   static class Person extends RunnableObservable {
 
-    String name;
-    int age;
+    private final String name;
+    private int age;
 
     void setAge(int newAge) {
       if (this.age != newAge) {
