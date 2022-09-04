@@ -4,12 +4,8 @@ import java.util.stream.Stream;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PubSub {
-
-  private static final Logger LOG = LoggerFactory.getLogger(PubSub.class.getName());
 
   public static void main(String[] args) {
 
@@ -33,7 +29,7 @@ public class PubSub {
 
           @Override
           public void cancel() {
-            LOG.info("noOp for cancel");
+            System.out.print("noOp for cancel");
           }
         });
       }
@@ -42,23 +38,23 @@ public class PubSub {
     Subscriber<Integer> sub = new Subscriber<>() {
       @Override
       public void onSubscribe(Subscription subscription) {
-        LOG.info("onSubscribe");
+        System.out.println("onSubscribe");
         subscription.request(10);
       }
 
       @Override
       public void onNext(Integer integer) {
-        LOG.info("onNext: {}", integer);
+        System.out.println("onNext: " + integer);
       }
 
       @Override
       public void onError(Throwable throwable) {
-        LOG.error("onError: {}", throwable);
+        System.out.println("onError: " + throwable.getMessage());
       }
 
       @Override
       public void onComplete() {
-        LOG.info("onComplete");
+        System.out.println("onComplete");
       }
     };
 
