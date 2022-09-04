@@ -7,9 +7,44 @@ import org.reactivestreams.Subscription;
 
 public class PubSub {
 
+  /*
+      pub -> [Data1] -> mapPub (operator) -> [Data2] -> sub
+   */
   public static void main(String[] args) {
+    Publisher<Integer> pub = getIntegerPublisher();
+    Publisher<Integer> mapPub = mapPub(pub, i -> i * 10);
 
-    Publisher<Integer> pub = new Publisher<>() {
+    Subscriber<Integer> sub = getIntegerPrintSubscriber();
+    mapPub.subscribe(sub);
+  }
+
+  private static Subscriber<Integer> getIntegerPrintSubscriber() {
+    return new Subscriber<>() {
+      @Override
+      public void onSubscribe(Subscription subscription) {
+        System.out.println("onSubscribe");
+        subscription.request(10);
+      }
+
+      @Override
+      public void onNext(Integer integer) {
+        System.out.println("onNext: " + integer);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("onError: " + throwable.getMessage());
+      }
+
+      @Override
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    };
+  }
+
+  private static Publisher<Integer> getIntegerPublisher() {
+    return new Publisher<>() {
       final Stream<Integer> intStream = Stream.iterate(0, i -> i + 1);
 
       @Override
@@ -34,30 +69,5 @@ public class PubSub {
         });
       }
     };
-
-    Subscriber<Integer> sub = new Subscriber<>() {
-      @Override
-      public void onSubscribe(Subscription subscription) {
-        System.out.println("onSubscribe");
-        subscription.request(10);
-      }
-
-      @Override
-      public void onNext(Integer integer) {
-        System.out.println("onNext: " + integer);
-      }
-
-      @Override
-      public void onError(Throwable throwable) {
-        System.out.println("onError: " + throwable.getMessage());
-      }
-
-      @Override
-      public void onComplete() {
-        System.out.println("onComplete");
-      }
-    };
-
-    pub.subscribe(sub);
   }
 }
