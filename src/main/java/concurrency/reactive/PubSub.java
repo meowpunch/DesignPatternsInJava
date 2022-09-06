@@ -23,25 +23,10 @@ public class PubSub {
     return new Publisher<>() {
       @Override
       public void subscribe(Subscriber<? super Integer> subscriber) {
-        publisher.subscribe(new Subscriber<Integer>() {
-          @Override
-          public void onSubscribe(Subscription subscription) {
-            subscriber.onSubscribe(subscription);
-          }
-
+        publisher.subscribe(new DelegateSubscriber<Integer>((Subscriber<Integer>) subscriber) {
           @Override
           public void onNext(Integer integer) {
             subscriber.onNext(mapFunction.apply(integer));
-          }
-
-          @Override
-          public void onError(Throwable t) {
-            subscriber.onError(t);
-          }
-
-          @Override
-          public void onComplete() {
-            subscriber.onComplete();
           }
         });
       }
