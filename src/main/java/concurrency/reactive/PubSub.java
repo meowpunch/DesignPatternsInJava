@@ -13,7 +13,7 @@ public class PubSub {
       pub -> [Data1] -> mapPub (operator) -> [Data2] -> sub
    */
   public static void main(String[] args) {
-    Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1) );
+    Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1));
     Publisher<Integer> pub1= mapPub(pub, i -> i * 10);
 //    Publisher<Integer> pub2 = reducePub(pub1, 0, Integer::sum);
     var pub2 = reducePub(pub1, new StringBuilder(), (sb, i) -> sb.append(i).append(". "));
