@@ -1,5 +1,6 @@
 package concurrency.reactive;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.reactivestreams.Publisher;
@@ -12,11 +13,28 @@ public class PubSub {
       pub -> [Data1] -> mapPub (operator) -> [Data2] -> sub
    */
   public static void main(String[] args) {
-    Publisher<Integer> pub = getIntegerPublisher();
+    Publisher<Integer> pub = getIntegerPublisherOneTo();
     Publisher<Integer> mapPub = mapPub(pub, i -> i * 10);
+    Publisher<Integer> sumPub = reducePub(mapPub, Integer::sum);
 
-    Subscriber<Integer> sub = getIntegerPrintSubscriber();
-    mapPub.subscribe(sub);
+    Subscriber<Integer> sub = getIntegerPrintSubscriber(3);
+    sumPub.subscribe(sub);
+  }
+
+  private static Publisher<Integer> reducePub(Publisher<Integer> mapPub, BiFunction<Integer, Integer, Integer> reduceFunction) {
+    return subscriber -> mapPub.subscribe(new DelegateSubscriber<Integer>((Subscriber<Integer>) subscriber) {
+      int sum = 0;
+      @Override
+      public void onNext(Integer integer) {
+        sum += integer;
+      }
+
+      @Override
+      public void onComplete() {
+        subscriber.onNext(sum);
+        subscriber.onComplete();
+      }
+    });
   }
 
   private static Publisher<Integer> mapPub(Publisher<Integer> publisher, Function<Integer, Integer> mapFunction) {
@@ -33,12 +51,12 @@ public class PubSub {
     };
   }
 
-  private static Subscriber<Integer> getIntegerPrintSubscriber() {
+  private static Subscriber<Integer> getIntegerPrintSubscriber(int n) {
     return new Subscriber<>() {
       @Override
       public void onSubscribe(Subscription subscription) {
         System.out.println("onSubscribe");
-        subscription.request(10);
+        subscription.request(n);
       }
 
       @Override
@@ -58,9 +76,9 @@ public class PubSub {
     };
   }
 
-  private static Publisher<Integer> getIntegerPublisher() {
+  private static Publisher<Integer> getIntegerPublisherOneTo() {
     return new Publisher<>() {
-      final Stream<Integer> intStream = Stream.iterate(0, i -> i + 1);
+      final Stream<Integer> intStream = Stream.iterate(1, i -> i + 1);
 
       @Override
       public void subscribe(Subscriber<? super Integer> subscriber) {
