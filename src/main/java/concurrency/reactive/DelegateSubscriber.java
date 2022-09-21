@@ -4,11 +4,11 @@ package concurrency.reactive;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
-abstract class DelegateSubscriber<T> implements Subscriber<T> {
+abstract class DelegateSubscriber<T, R> implements Subscriber<T> {
 
-  private final Subscriber<T> subscriber;
+  private final Subscriber<?> subscriber;
 
-  DelegateSubscriber(Subscriber<T> subscriber) {
+  DelegateSubscriber(Subscriber<? super R> subscriber) {
     this.subscriber = subscriber;
   }
 

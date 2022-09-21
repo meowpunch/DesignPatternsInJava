@@ -13,17 +13,18 @@ public class PubSub {
       pub -> [Data1] -> mapPub (operator) -> [Data2] -> sub
    */
   public static void main(String[] args) {
-    Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1));
-    Publisher<Integer> mapPub = mapPub(pub, i -> i * 10);
-    Publisher<Integer> sumPub = reducePub(mapPub, 0, Integer::sum);
+    Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1) );
+    Publisher<Integer> pub1= mapPub(pub, i -> i * 10);
+//    Publisher<Integer> pub2 = reducePub(pub1, 0, Integer::sum);
+    Publisher<String> pub2 = reducePub(pub1, "", (s, i) -> s + i + ". ");
 
-    Subscriber<Integer> sub = getIntegerPrintSubscriber(10);
-    sumPub.subscribe(sub);
+    var sub = getIntegerPrintSubscriber(10);
+    pub2.subscribe(sub);
   }
 
-  private static <T> Publisher<T> reducePub(Publisher<T> mapPub, T init , BiFunction<T, T, T> reduceFunction) {
-    return subscriber -> mapPub.subscribe(new DelegateSubscriber<>((Subscriber<T>) subscriber) {
-      T result = init;
+  private static <T, R> Publisher<R> reducePub(Publisher<T> mapPub, R init , BiFunction<R, T, R> reduceFunction) {
+    return subscriber -> mapPub.subscribe(new DelegateSubscriber<T, R>(subscriber) {
+      R result = init;
 
       @Override
       public void onNext(T integer) {
@@ -38,11 +39,11 @@ public class PubSub {
     });
   }
 
-  private static <T> Publisher<T> mapPub(Publisher<T> publisher, Function<T, T> mapFunction) {
+  private static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> mapFunction) {
     return new Publisher<>() {
       @Override
-      public void subscribe(Subscriber<? super T> subscriber) {
-        publisher.subscribe(new DelegateSubscriber<>((Subscriber<T>) subscriber) {
+      public void subscribe(Subscriber<? super R> subscriber) {
+        publisher.subscribe(new DelegateSubscriber<T, R>(subscriber) {
           @Override
           public void onNext(T t) {
             subscriber.onNext(mapFunction.apply(t));
