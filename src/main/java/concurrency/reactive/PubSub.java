@@ -13,45 +13,46 @@ public class PubSub {
       pub -> [Data1] -> mapPub (operator) -> [Data2] -> sub
    */
   public static void main(String[] args) {
-    Publisher<Integer> pub = getIntegerPublisherOneTo();
+    Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1));
     Publisher<Integer> mapPub = mapPub(pub, i -> i * 10);
-    Publisher<Integer> sumPub = reducePub(mapPub, Integer::sum);
+    Publisher<Integer> sumPub = reducePub(mapPub, 0, Integer::sum);
 
-    Subscriber<Integer> sub = getIntegerPrintSubscriber(3);
+    Subscriber<Integer> sub = getIntegerPrintSubscriber(10);
     sumPub.subscribe(sub);
   }
 
-  private static Publisher<Integer> reducePub(Publisher<Integer> mapPub, BiFunction<Integer, Integer, Integer> reduceFunction) {
-    return subscriber -> mapPub.subscribe(new DelegateSubscriber<Integer>((Subscriber<Integer>) subscriber) {
-      int sum = 0;
+  private static <T> Publisher<T> reducePub(Publisher<T> mapPub, T init , BiFunction<T, T, T> reduceFunction) {
+    return subscriber -> mapPub.subscribe(new DelegateSubscriber<>((Subscriber<T>) subscriber) {
+      T result = init;
+
       @Override
-      public void onNext(Integer integer) {
-        sum += integer;
+      public void onNext(T integer) {
+        result = reduceFunction.apply(result, integer);
       }
 
       @Override
       public void onComplete() {
-        subscriber.onNext(sum);
+        subscriber.onNext(result);
         subscriber.onComplete();
       }
     });
   }
 
-  private static Publisher<Integer> mapPub(Publisher<Integer> publisher, Function<Integer, Integer> mapFunction) {
+  private static <T> Publisher<T> mapPub(Publisher<T> publisher, Function<T, T> mapFunction) {
     return new Publisher<>() {
       @Override
-      public void subscribe(Subscriber<? super Integer> subscriber) {
-        publisher.subscribe(new DelegateSubscriber<Integer>((Subscriber<Integer>) subscriber) {
+      public void subscribe(Subscriber<? super T> subscriber) {
+        publisher.subscribe(new DelegateSubscriber<>((Subscriber<T>) subscriber) {
           @Override
-          public void onNext(Integer integer) {
-            subscriber.onNext(mapFunction.apply(integer));
+          public void onNext(T t) {
+            subscriber.onNext(mapFunction.apply(t));
           }
         });
       }
     };
   }
 
-  private static Subscriber<Integer> getIntegerPrintSubscriber(int n) {
+  private static <T> Subscriber<T> getIntegerPrintSubscriber(int n) {
     return new Subscriber<>() {
       @Override
       public void onSubscribe(Subscription subscription) {
@@ -60,7 +61,7 @@ public class PubSub {
       }
 
       @Override
-      public void onNext(Integer integer) {
+      public void onNext(T integer) {
         System.out.println("onNext: " + integer);
       }
 
@@ -76,17 +77,15 @@ public class PubSub {
     };
   }
 
-  private static Publisher<Integer> getIntegerPublisherOneTo() {
+  private static <T> Publisher<T> streamPublisher(Stream<T> stream) {
     return new Publisher<>() {
-      final Stream<Integer> intStream = Stream.iterate(1, i -> i + 1);
-
       @Override
-      public void subscribe(Subscriber<? super Integer> subscriber) {
+      public void subscribe(Subscriber<? super T> subscriber) {
         subscriber.onSubscribe(new Subscription() {
           @Override
           public void request(long n) {
             try {
-              intStream.limit(n)
+              stream.limit(n)
                   .forEach(subscriber::onNext);
             } catch (Exception e) {
               subscriber.onError(e);
