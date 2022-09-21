@@ -16,7 +16,7 @@ public class PubSub {
     Publisher<Integer> pub = streamPublisher(Stream.iterate(1, i -> i + 1) );
     Publisher<Integer> pub1= mapPub(pub, i -> i * 10);
 //    Publisher<Integer> pub2 = reducePub(pub1, 0, Integer::sum);
-    Publisher<String> pub2 = reducePub(pub1, "", (s, i) -> s + i + ". ");
+    var pub2 = reducePub(pub1, new StringBuilder(), (sb, i) -> sb.append(i).append(". "));
 
     var sub = getIntegerPrintSubscriber(10);
     pub2.subscribe(sub);
