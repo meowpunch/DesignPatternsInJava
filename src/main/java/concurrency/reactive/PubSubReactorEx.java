@@ -2,7 +2,7 @@ package concurrency.reactive;
 
 import reactor.core.publisher.Flux;
 
-public class ReactorEx {
+public class PubSubReactorEx {
 
   /*
       Reactor is a reactive library which implements Reactive Streams Specification. Spring choose reactor by default.
