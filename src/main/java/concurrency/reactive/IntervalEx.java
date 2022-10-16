@@ -63,7 +63,7 @@ public class IntervalEx {
           @Override
           public void onNext(Integer integer) {
             if (count++ >= n) subscription.cancel();
-            subscriber.onNext(integer);
+            else subscriber.onNext(integer);
           }
 
           @Override
