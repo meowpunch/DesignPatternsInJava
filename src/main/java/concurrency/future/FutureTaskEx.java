@@ -15,6 +15,9 @@ public class FutureTaskEx {
     final ExecutorService executorService = Executors.newCachedThreadPool();
 
     final long startTime = System.currentTimeMillis();
+
+    // non-blocking and asynchronous
+    // similar to callback style
     FutureTask<String> future = new FutureTask<>(
         () -> {
           log.debug("Processing task asynchronously");
@@ -30,9 +33,9 @@ public class FutureTaskEx {
       @Override
       protected void done() {
         try {
-          System.out.println("The async result is " + get());
+          log.info("Result: " + get());
         } catch (InterruptedException | ExecutionException e) {
-          throw new RuntimeException(e);
+          log.error("Error: " + e.getMessage());
         }
       }
     };

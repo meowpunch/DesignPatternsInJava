@@ -32,7 +32,9 @@ public class FutureEx {
     Thread.sleep(1000);
 
     log.debug("Is the async task done? " + future.isDone());
-    System.out.println("The async result is " + future.get()); // blocking, wait the async result.
+    // blocking, wait the async result.
+    // business logic is messed up with non-business logic
+    log.info("The async result is " + future.get());
     log.debug("Exit " + (System.currentTimeMillis() - startTime));
   }
 }
